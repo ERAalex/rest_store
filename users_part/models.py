@@ -34,6 +34,12 @@ class UserAccountManager(BaseUserManager):
         return user
 
 
+USER_TYPE_CHOICES = (
+    ('shop', 'Магазин'),
+    ('buyer', 'Покупатель'),
+
+)
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
@@ -41,6 +47,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_partner = models.BooleanField(default=False)
+    type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
     person_rating = models.IntegerField('Рейтинг клиента', blank=True, null=True)
     person_created = models.DateTimeField('Дата создания аккаунта', auto_now=True)
     person_telephone = models.CharField('Номер телефона', max_length=20, blank=True)
