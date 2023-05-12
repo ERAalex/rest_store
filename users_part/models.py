@@ -41,7 +41,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_partner = models.BooleanField(default=False)
-    person_rating = models.IntegerField('Рейтинг клиента', blank=True)
+    person_rating = models.IntegerField('Рейтинг клиента', blank=True, null=True)
     person_created = models.DateTimeField('Дата создания аккаунта', auto_now=True)
     person_telephone = models.CharField('Номер телефона', max_length=20, blank=True)
     person_address = models.CharField('Адрес', max_length=200, blank=True)
