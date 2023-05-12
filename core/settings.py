@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -135,6 +136,8 @@ EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT',),
+   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+   'REFRESH_TOKEN_LIFETIME': timedelta(minutes=720),
 }
 
 DJOSER = {
