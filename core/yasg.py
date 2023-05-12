@@ -6,7 +6,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='Marketplace API',
+        title='Espinosa STORE API',
         default_version='1v',
         description='API project description',
         license=openapi.License(name='BSD License')
