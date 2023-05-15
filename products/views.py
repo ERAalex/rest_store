@@ -5,10 +5,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 import yaml
+from rest_framework.viewsets import ModelViewSet
 from yaml import load as load_yaml, Loader
 
 from requests import get
-
+from core.filters import ShopFilter
+from .serializers import ProductListSerializer
 from .models import *
 
 
@@ -18,6 +20,9 @@ class PartnerUpdate(APIView):
     """
 
     def post(self, request):
+        if request.user.is_partner is False:
+            return Response({'status': 'You are not partner!'})
+
         # сохраняем файл из post запроса
         result = request.FILES['file']
         destination = open('media/' + result.name, 'wb+')
@@ -54,5 +59,17 @@ class PartnerUpdate(APIView):
                             parameter=parameter_object,
                             value=value)
             except yaml.YAMLError as exc:
-                return Response({'status':'Error', 'message': exc})
-        return Response({'status':'OK'})
+                return Response({'status': 'Error', 'message': exc})
+        return Response({'status': 'OK'})
+
+
+class ProductsViewSet(ModelViewSet):
+    """
+    Класс для просмотра всех доступных продуктов, с возможностью фильтрации по магазинам и категориям товаров
+    """
+    queryset = Category.objects.all()
+    serializer_class = ProductListSerializer
+    http_method_names = ['get', ]
+    filterset_class = ShopFilter
+
+
