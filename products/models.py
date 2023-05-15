@@ -2,7 +2,6 @@ from django.db import models
 from users_part.models import UserAccount
 
 
-
 class Shop(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название')
     url = models.URLField(verbose_name='Ссылка', null=True, blank=True)

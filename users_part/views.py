@@ -15,3 +15,6 @@ class ActivateUser(UserViewSet):
         super().activation(request, *args, **kwargs)
         return Response({'активация': 'активация аккаунта прошла успешно'})
 
+
+
+

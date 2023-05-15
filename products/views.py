@@ -10,7 +10,7 @@ from yaml import load as load_yaml, Loader
 
 from requests import get
 from core.filters import ShopFilter
-from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer
+from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer
 from .models import *
 
 
@@ -89,7 +89,7 @@ class ProductsItemViewSet(ModelViewSet):
 
 class OrderItemViewSet(ModelViewSet):
     """
-    Добавление продукта в список заказанных позиций
+    Показать все продукты добавленные в корзину
     """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
@@ -97,5 +97,23 @@ class OrderItemViewSet(ModelViewSet):
     filterset_class = ShopFilter
 
 
+class PartnerOrdersView(APIView):
+    """
+    Отображение заказов для магазинов - владельцев
+    """
+    def get(self, request, *args, **kwargs):
 
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Only for registered users'}, status=403)
+
+        if request.user.type != 'shop':
+            return JsonResponse({'Status': False, 'Error': 'Only shops'}, status=403)
+
+        order = Order.objects.filter(
+            ordered_items__product_info__shop__user_account_id=request.user.id).exclude(state='basket').prefetch_related(
+            'ordered_items__product_info__product__category')
+
+        serializer = OrderSerializer(order, many=True)
+
+        return Response(serializer.data)
 

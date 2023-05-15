@@ -65,7 +65,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    contact = ContactSerializer(many=True)
+    contact = ContactSerializer
 
     class Meta:
         model = Order
