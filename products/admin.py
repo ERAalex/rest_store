@@ -42,10 +42,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'state']
 
 
+# список заказанных позиций
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product_info', 'quantity']
-
-
-
 

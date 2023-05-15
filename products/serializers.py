@@ -55,3 +55,29 @@ class ProductListSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'category': {'source': 'name', 'read_only': True}
         }
+
+
+class ContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = ['city']
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    contact = ContactSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ['dt', 'contact']
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_info = ProductInfoSerializer
+    order = OrderSerializer
+
+    class Meta:
+        model = OrderItem
+        fields = ['order', 'product_info', 'quantity']
+
+

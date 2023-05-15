@@ -64,9 +64,14 @@ class ProductInfo(models.Model):
         verbose_name = 'Информация о продукте'
         verbose_name_plural = "Информационный список о продуктах"
         constraints = [
-            models.UniqueConstraint(fields=['product', 'shop'], name='unique_product_info'),
+            models.UniqueConstraint(fields=['product', 'shop'], name='product_info'),
         ]
 
+
+
+    # добавим пункт, чтобы видеть в заказаннаых товарах не object, а название моделей
+    def __str__(self):
+        return str(self.model)
 
 class Parameter(models.Model):
     name = models.CharField(max_length=40, verbose_name='Название')
@@ -112,7 +117,7 @@ class Contact(models.Model):
 
     class Meta:
         verbose_name = 'Контакты пользователя'
-        verbose_name_plural = "Список контактов пользователя"
+        verbose_name_plural = "Контакты пользователя"
 
     def __str__(self):
         return f'{self.city} {self.street} {self.house}'
@@ -147,7 +152,7 @@ class Order(models.Model):
 
     class Meta:
         verbose_name = 'Заказ'
-        verbose_name_plural = "Список заказ"
+        verbose_name_plural = "Заказ"
         ordering = ('-dt',)
 
     def __str__(self):
@@ -159,7 +164,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, verbose_name='Заказ', related_name='ordered_items', blank=True,
+    order = models.ForeignKey(Order, verbose_name='Заказ', related_name='ordered_items', blank=True, null=True,
                               on_delete=models.CASCADE)
 
     product_info = models.ForeignKey(ProductInfo, verbose_name='Информация о продукте', related_name='ordered_items',
