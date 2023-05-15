@@ -18,6 +18,14 @@ class PartnerUpdate(APIView):
     """
 
     def post(self, request):
+        # сохраняем файл из post запроса
+        result = request.FILES['file']
+        destination = open('media/' + result.name, 'wb+')
+        for chunk in result.chunks():
+            destination.write(chunk)
+        destination.close()
+
+        # открываем и обновляем БД
         with open("media/shop1.yaml") as stream:
             try:
                 data = load_yaml(stream, Loader=Loader)
