@@ -69,7 +69,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['dt', 'contact']
+        fields = ['dt', 'contact', 'state']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

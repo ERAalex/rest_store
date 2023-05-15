@@ -99,7 +99,7 @@ class OrderItemViewSet(ModelViewSet):
 
 class PartnerOrdersView(APIView):
     """
-    Отображение заказов для магазинов - владельцев
+    Отображение всех заказов для магазинов - владельцев
     """
     def get(self, request, *args, **kwargs):
 

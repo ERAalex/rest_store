@@ -12,5 +12,5 @@ urlpatterns = [
     path('products/<id>', ProductsItemViewSet.as_view({'get': 'list'})),
 
     path('orderitem', OrderItemViewSet.as_view({'get': 'list'})),
-    path('all_ordes_available', PartnerOrdersView.as_view())
+    path('all_ordes_available', PartnerOrdersView.as_view()),
 ]
