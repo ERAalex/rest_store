@@ -10,7 +10,7 @@ from yaml import load as load_yaml, Loader
 
 from requests import get
 from core.filters import ShopFilter
-from .serializers import ProductListSerializer
+from .serializers import ProductListSerializer, ProductSerializer
 from .models import *
 
 
@@ -71,5 +71,20 @@ class ProductsViewSet(ModelViewSet):
     serializer_class = ProductListSerializer
     http_method_names = ['get', ]
     filterset_class = ShopFilter
+
+
+class ProductsItemViewSet(ModelViewSet):
+    """
+    Просмотре ввсех товаров, фильтрация по категоориям и магазинам
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    http_method_names = ['get', ]
+    filterset_class = ShopFilter
+
+    def get_queryset(self):
+        id = self.kwargs['id']
+        return Product.objects.filter(id=id)
+
 
 
