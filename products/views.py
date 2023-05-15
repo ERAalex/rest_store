@@ -65,7 +65,7 @@ class PartnerUpdate(APIView):
 
 class ProductsViewSet(ModelViewSet):
     """
-    Класс для просмотра всех доступных продуктов, с возможностью фильтрации по магазинам и категориям товаров
+    Просмотре ввсех товаров, фильтрация по категоориям и магазинам
     """
     queryset = Category.objects.all()
     serializer_class = ProductListSerializer
