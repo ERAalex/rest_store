@@ -93,9 +93,11 @@ class OrderItemViewSet(ModelViewSet):
     """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    http_method_names = ['get', ]
+    http_method_names = ['get', 'put',]
     filterset_class = ShopFilter
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 class PartnerOrdersView(APIView):
     """
@@ -164,3 +166,5 @@ class BasketView(APIView):
 
         return Response({'Статус': f'Товары занесены в корзину:s {order}. Товар: {product_check.name}, количество: '
                                    f'{quantity_items}'})
+
+

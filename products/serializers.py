@@ -78,6 +78,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['order', 'product_info', 'quantity']
+        fields = ['id', 'order', 'product_info', 'quantity']
 
 
