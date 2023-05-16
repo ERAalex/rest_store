@@ -13,7 +13,7 @@ urlpatterns = [
     path('products/<id>', ProductsItemViewSet.as_view({'get': 'list'})),
 
     path('orderitem', OrderItemViewSet.as_view({'get': 'list'})),
-    path('orderitem/<pk>', OrderItemViewSet.as_view({'put': 'update'})),
+    path('orderitem/<pk>', OrderItemViewSet.as_view({'put': 'update', 'delete': 'destroy'})),
     path('all_ordes_available', PartnerOrdersView.as_view()),
 
     path('basket', BasketView.as_view()),

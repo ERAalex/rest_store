@@ -1,6 +1,7 @@
 from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
@@ -93,11 +94,16 @@ class OrderItemViewSet(ModelViewSet):
     """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    http_method_names = ['get', 'put',]
+    http_method_names = ['get', 'put', 'delete']
     filterset_class = ShopFilter
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class PartnerOrdersView(APIView):
     """
