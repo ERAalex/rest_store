@@ -177,7 +177,7 @@ class BasketView(APIView):
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
 
             dicc_information['order'] = order
-            dicc_information[f'{product_check.name}'] = f'количество товара: {quantity_items}'
+            dicc_information[f'{product_check.name}'] = f'количество товара  : {quantity_items}'
 
 
         return Response({'Статус': f'Товары занесены в корзину: {dicc_information["order"]}. '
