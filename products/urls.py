@@ -1,5 +1,6 @@
 from django.urls import include, path
-from .views import PartnerUpdate, ProductsViewSet, ProductsItemViewSet, OrderItemViewSet, PartnerOrdersView
+from .views import PartnerUpdate, ProductsViewSet, ProductsItemViewSet, OrderItemViewSet, PartnerOrdersView, \
+    BasketView
 
 from rest_framework import routers
 router = routers.SimpleRouter()
@@ -13,4 +14,6 @@ urlpatterns = [
 
     path('orderitem', OrderItemViewSet.as_view({'get': 'list'})),
     path('all_ordes_available', PartnerOrdersView.as_view()),
+
+    path('basket', BasketView.as_view()),
 ]

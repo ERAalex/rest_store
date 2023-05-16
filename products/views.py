@@ -117,3 +117,50 @@ class PartnerOrdersView(APIView):
 
         return Response(serializer.data)
 
+
+
+class BasketView(APIView):
+
+    def post(self, request):
+        user_id = request.user
+        quantity_items = request.data['quantity']
+        product_id = int(request.data['item'])
+
+        try:
+            quantity_items = int(quantity_items)
+        except ValueError:
+            return Response({'error': 'Количество товара указано не цифрой'})
+
+        if quantity_items <= 0:
+            return Response({'error': 'Вы ввели не корректное количество товара'})
+
+        ''' проверяем есть ли такой товар по ID и сразу првоеряем количесто в магазинах '''
+        try:
+            product_check = Product.objects.get(id=product_id)
+            product_info = ProductInfo.objects.filter(product=product_check)
+            total_quantity_shops = sum([item.quantity for item in product_info])
+            if total_quantity_shops == 0:
+                return Response({'error': 'Товара нет в наличии'})
+
+            if quantity_items > total_quantity_shops:
+                quantity_items = total_quantity_shops
+
+        except Exception as e:
+            print(e)
+            return Response({'error': 'Вы ввели не правильный ID продукта, перепроверьте данные'})
+
+        ''' Создаем корзину, потом создаем итемы корзины и добавляем их в нее'''
+        try:
+            order, create_order_items = Order.objects.get_or_create(user=user_id, state='basket')
+            OrderItem.objects.get_or_create(
+                order=order,
+                # нам нужен тут 0, тк это список из разных магазинов нашего товара, берем 1, тк это один и тотже товарs
+                product_info=product_info[0],
+                quantity=quantity_items
+            )
+        except Exception as e:
+            print(e)
+            return Response({'error': 'Не удалось сохранить товар в корзину'})
+
+        return Response({'Статус': f'Товары занесены в корзину:s {order}. Товар: {product_check.name}, количество: '
+                                   f'{quantity_items}'})
