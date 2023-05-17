@@ -1,6 +1,5 @@
 from django.urls import include, path
-from .views import PartnerUpdate, ProductsViewSet, ProductsItemViewSet, OrderItemViewSet, PartnerOrdersView, \
-    BasketView
+from .views import *
 
 from rest_framework import routers
 router = routers.SimpleRouter()
@@ -8,6 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     path('upload/', PartnerUpdate.as_view()),
+    path('shops', ShopViewSet.as_view({'get': 'list'})),
 
     path('products', ProductsViewSet.as_view({'get': 'list'})),
     path('products/<id>', ProductsItemViewSet.as_view({'get': 'list'})),

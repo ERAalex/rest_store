@@ -2,6 +2,7 @@ from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
@@ -11,7 +12,7 @@ from yaml import load as load_yaml, Loader
 
 from requests import get
 from core.filters import ShopFilter
-from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer
+from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer, ShopSerializer
 from .models import *
 
 
@@ -62,6 +63,17 @@ class PartnerUpdate(APIView):
             except yaml.YAMLError as exc:
                 return Response({'status': 'Error', 'message': exc})
         return Response({'status': 'OK'})
+
+
+class ShopViewSet(ModelViewSet):
+    """
+    Просмотреть все доступные магазины
+    """
+    queryset =Shop.objects.all()
+    serializer_class = ShopSerializer
+    http_method_names = ['get', ]
+    permission_classes = [AllowAny]
+
 
 
 class ProductsViewSet(ModelViewSet):
