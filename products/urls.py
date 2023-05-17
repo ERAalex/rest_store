@@ -6,7 +6,7 @@ router = routers.SimpleRouter()
 
 
 urlpatterns = [
-    path('upload/', PartnerUpdate.as_view()),
+    path('shops/upload/', PartnerUpdate.as_view()),
     path('shops', ShopViewSet.as_view({'get': 'list'})),
 
     path('products', ProductsViewSet.as_view({'get': 'list'})),

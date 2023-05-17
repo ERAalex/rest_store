@@ -14,7 +14,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category']
+    list_display = ['id', 'name', 'category']
 
 
 @admin.register(ProductInfo)

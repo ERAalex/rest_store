@@ -196,7 +196,13 @@ class BasketView(APIView):
                                    f'Товар: {dicc_information}.'})
 
 
+    def get(self, request):
+        user_id = request.user
 
+        order = Order.objects.filter(user=user_id, state='basket')
+        result = [item for item in order]
+
+        return Response({'корзины': f'{result}'})
 
 
 
