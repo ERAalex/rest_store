@@ -25,14 +25,14 @@ class PartnerUpdate(APIView):
         if request.user.is_partner is False:
             return Response({'status': 'You are not partner!'})
 
-        # сохраняем файл из post запроса
+        '''Сохранение файла из POST запроса'''
         result = request.FILES['file']
         destination = open('media/' + result.name, 'wb+')
         for chunk in result.chunks():
             destination.write(chunk)
         destination.close()
 
-        # открываем и обновляем БД
+        '''Открываем файл и обновляем БД'''
         with open("media/shop1.yaml") as stream:
             try:
                 data = load_yaml(stream, Loader=Loader)
@@ -69,11 +69,10 @@ class ShopViewSet(ModelViewSet):
     """
     Просмотреть все доступные магазины
     """
-    queryset =Shop.objects.all()
+    queryset = Shop.objects.all()
     serializer_class = ShopSerializer
     http_method_names = ['get', ]
     permission_classes = [AllowAny]
-
 
 
 class ProductsViewSet(ModelViewSet):
@@ -96,8 +95,8 @@ class ProductsItemViewSet(ModelViewSet):
     filterset_class = ShopFilter
 
     def get_queryset(self):
-        id = self.kwargs['id']
-        return Product.objects.filter(id=id)
+        id_data = self.kwargs['id']
+        return Product.objects.filter(id=id_data)
 
 
 class OrderItemViewSet(ModelViewSet):
@@ -116,6 +115,7 @@ class OrderItemViewSet(ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class PartnerOrdersView(APIView):
     """
@@ -147,7 +147,7 @@ class BasketView(APIView):
         if type(request.data) is not list:
             return Response({'error': 'Не корректный ввод, должен быть список'})
 
-        dicc_information = dict()
+        dict_information = dict()
         for data_item in request.data:
             quantity_items = data_item['quantity']
             product_id = int(data_item['product_info'])
@@ -180,7 +180,7 @@ class BasketView(APIView):
                 order, create_order_items = Order.objects.get_or_create(user=user_id, state='basket')
                 OrderItem.objects.get_or_create(
                     order=order,
-                    # нам нужен тут 0, тк это список из разных магазинов нашего товара, берем 1, тк это один и тотже товарs
+                    # нам нужен тут 0, тк это список из разных магазинов нашего товара, берем 1 (одинаковые товары)
                     product_info=product_info[0],
                     quantity=quantity_items
                 )
@@ -188,24 +188,19 @@ class BasketView(APIView):
                 print(e)
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
 
-            dicc_information['order'] = order
-            dicc_information[f'{product_check.name}'] = f'количество товара  : {quantity_items}'
+            dict_information['order'] = order
+            dict_information[f'{product_check.name}'] = f'количество товара  : {quantity_items}'
 
-
-        return Response({'Статус': f'Товары занесены в корзину: {dicc_information["order"]}. '
-                                   f'Товар: {dicc_information}.'})
-
+        return Response({'Статус': f'Товары занесены в корзину: {dict_information["order"]}. '
+                                   f'Товар: {dict_information}.'})
 
     def get(self, request):
-        user_id = request.user
 
+        '''Получить все корзины пользователя'''
+
+        user_id = request.user
         order = Order.objects.filter(user=user_id, state='basket')
         result = [item for item in order]
 
-        return Response({'корзины': f'{result}'})
-
-
-
-
-
+        return Response({'Корзины': f'{result}'})
 
