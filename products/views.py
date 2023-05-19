@@ -237,16 +237,14 @@ class BasketView(APIView):
 
             ''' проверяем есть ли такой товар по ID и сразу првоеряем количесто в магазинах '''
             try:
-                order_item = OrderItem.objects.filter(id=product_id)
-                for item in order_item:
-                    print(item.product_info)
+                order_item_get = OrderItem.objects.get(id=product_id)
+                total_quantity_in_shops = order_item_get.product_info.quantity
 
-                total_quantity_shops = sum([item.quantity for item in shop_check])
-                if total_quantity_shops == 0:
-                    return Response({'error': f'Товара {order_item.model} нет в наличии'})
+                if total_quantity_in_shops == 0:
+                    return Response({'error': f'Товара {order_item_get.model} нет в наличии'})
 
-                if quantity_items > total_quantity_shops:
-                    quantity_items = total_quantity_shops
+                if quantity_items > total_quantity_in_shops:
+                    quantity_items = total_quantity_in_shops
 
             except Exception as e:
                 print(e)
@@ -254,19 +252,17 @@ class BasketView(APIView):
 
             try:
                 order = Order.objects.get(user=user_id, state='basket')
-                order_item = OrderItem.objects.update_or_create(
-                    order=order,
-                    # нам нужен тут 0, тк это список из разных магазинов нашего товара, берем 1 (одинаковые товары)
-                    product_info=order_item,
+                order_item = OrderItem.objects.filter(id=product_id).update(
                     quantity=quantity_items
                 )
+
 
             except Exception as e:
                 print(e)
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
 
             dict_information['order'] = order
-            dict_information[f'{product_check.name}'] = f'количество товара  : {quantity_items}'
+            dict_information[f'{order_item_get.product_info.product.name}'] = f'количество товара  : {quantity_items}'
 
         return Response({'Статус': f'Товары изменены в корзине: {dict_information["order"]}. '
                                    f'Товар: {dict_information}.'})
