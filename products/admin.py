@@ -32,11 +32,6 @@ class ProductParameterAdmin(admin.ModelAdmin):
     list_display = ['value']
 
 
-@admin.register(Contact)
-class ContactAdmin(admin.ModelAdmin):
-    list_display = ['user', 'city']
-
-
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'state']

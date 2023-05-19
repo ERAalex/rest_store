@@ -1,11 +1,9 @@
-from django.core.validators import URLValidator
 from django.http import JsonResponse
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.core.exceptions import ValidationError
+
 import yaml
 from rest_framework.viewsets import ModelViewSet
 from yaml import load as load_yaml, Loader
@@ -146,6 +144,8 @@ class PartnerOrdersView(APIView):
 class BasketView(APIView):
 
     def post(self, request):
+        ''' Загрузка списка OrderItems в корзину - принимает список'''
+
         user_id = request.user
 
         if type(request.data) is not list:
@@ -205,7 +205,10 @@ class BasketView(APIView):
         '''Получить все корзины пользователя'''
 
         user_id = request.user
-        order = Order.objects.get(user=user_id, state='basket')
+        try:
+            order = Order.objects.get(user=user_id, state='basket')
+        except:
+            return Response({'Error': f'Корзина отсутвует, добавьте сначало предметы'})
 
         product = OrderItem.objects.filter(order=order)
 
@@ -216,6 +219,8 @@ class BasketView(APIView):
         return Response({'Всего в корзине товаров': f'{dict_result}'})
 
     def put(self, request):
+        ''' Обновление корзины - принимает список'''
+
         user_id = request.user
 
         if type(request.data) is not list:
@@ -266,3 +271,5 @@ class BasketView(APIView):
 
         return Response({'Статус': f'Товары изменены в корзине: {dict_information["order"]}. '
                                    f'Товар: {dict_information}.'})
+
+

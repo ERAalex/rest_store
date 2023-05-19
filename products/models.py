@@ -1,5 +1,5 @@
 from django.db import models
-from users_part.models import UserAccount
+from users_part.models import UserAccount, ContactUser
 
 
 class Shop(models.Model):
@@ -100,28 +100,6 @@ class ProductParameter(models.Model):
         ]
 
 
-
-class Contact(models.Model):
-    user = models.ForeignKey(UserAccount, verbose_name='Пользователь',
-                             related_name='contacts', blank=True,
-                             on_delete=models.CASCADE)
-
-    city = models.CharField(max_length=50, verbose_name='Город')
-    street = models.CharField(max_length=100, verbose_name='Улица')
-    house = models.CharField(max_length=15, verbose_name='Дом', blank=True)
-    structure = models.CharField(max_length=15, verbose_name='Корпус', blank=True)
-    building = models.CharField(max_length=15, verbose_name='Строение', blank=True)
-    apartment = models.CharField(max_length=15, verbose_name='Квартира', blank=True)
-    phone = models.CharField(max_length=20, verbose_name='Телефон')
-
-    class Meta:
-        verbose_name = 'Контакты пользователя'
-        verbose_name_plural = "Контакты пользователя"
-
-    def __str__(self):
-        return f'{self.city} {self.street} {self.house}'
-
-
 STATE_CHOICES = (
     ('basket', 'Статус корзины'),
     ('new', 'Новый'),
@@ -145,7 +123,7 @@ class Order(models.Model):
                              on_delete=models.CASCADE)
     dt = models.DateTimeField(auto_now_add=True)
     state = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
-    contact = models.ForeignKey(Contact, verbose_name='Контакт',
+    contact = models.ForeignKey(ContactUser, verbose_name='Контакт',
                                 blank=True, null=True,
                                 on_delete=models.CASCADE)
 

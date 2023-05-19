@@ -1,5 +1,10 @@
 from djoser.views import UserViewSet
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from .serializers import ContactUserSerializer
+
+from .models import *
 
 
 class ActivateUser(UserViewSet):
@@ -17,4 +22,14 @@ class ActivateUser(UserViewSet):
 
 
 
+class ContactUserApiView(ModelViewSet):
+    '''
+    Создание и редактирование Контактов Пользователя
 
+    '''
+    permission_classes = [IsAuthenticated]
+    queryset = ContactUser.objects.all()
+    serializer_class = ContactUserSerializer
+
+    def get_queryset(self):
+        return ContactUser.objects.filter(user=self.request.user)

@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from .models import *
+from users_part.models import ContactUser
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -60,7 +61,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Contact
+        model = ContactUser
         fields = ['city']
 
 
