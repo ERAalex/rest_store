@@ -15,7 +15,6 @@ from .serializers import ProductListSerializer, ProductSerializer, OrderItemSeri
 from .models import *
 from users_part.models import ContactUser
 from users_part.serializers import ContactUserSerializer
-import datetime
 
 
 class PartnerUpdate(APIView):
@@ -135,14 +134,13 @@ class PartnerOrdersView(APIView):
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Only shops'}, status=403)
 
+        '''Ищем только корзины со статусом - confirmed - со стороны пользователя и только для конкретного продавца'''
+
         order = Order.objects.filter(
-            ordered_items__product_info__shop__user_account_id=request.user.id).exclude(state='basket').prefetch_related(
-            'ordered_items__product_info__product__category')
+            ordered_items__product_info__shop__user_account_id=request.user.id, state='confirmed')
 
         serializer = OrderSerializer(order, many=True)
-
         return Response(serializer.data)
-
 
 
 class BasketView(APIView):
@@ -168,7 +166,7 @@ class BasketView(APIView):
             if quantity_items <= 0:
                 return Response({'error': 'Вы ввели не корректное количество товара'})
 
-            ''' проверяем есть ли такой товар по ID и сразу првоеряем количесто в магазинах '''
+            ''' проверяем есть ли такой товар по ID и сразу проверяем количесто в магазинах '''
             try:
                 product_info = ProductInfo.objects.filter(id=product_id)
                 product_check = product_info[0].product
@@ -193,7 +191,6 @@ class BasketView(APIView):
                     quantity=quantity_items
                 )
 
-
             except Exception as e:
                 print(e)
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
@@ -205,7 +202,6 @@ class BasketView(APIView):
                                    f'Товар: {dict_information}.'})
 
     def get(self, request):
-
         '''Получить все корзины пользователя'''
 
         user_id = request.user
@@ -265,7 +261,6 @@ class BasketView(APIView):
                     quantity=quantity_items
                 )
 
-
             except Exception as e:
                 print(e)
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
@@ -277,17 +272,14 @@ class BasketView(APIView):
                                    f'Товар: {dict_information}.'})
 
 
-
-
-
-
-# подтверждение пользовательского заказа
 class OrderConfirmationByUserView(APIView):
-
+    """
+    Подтверждение заказа пользователем
+    """
     def patch(self, request):
         user_id = request.user.id
 
-        ''' вызов функции, кот. сохраняет/обновляет адрес пользователя '''
+        ''' проверяем есть ли контактная информация перед подтверждением корзины '''
         check_contact_adress = ContactUser.objects.filter(user=user_id)
 
         if not check_contact_adress:
@@ -299,17 +291,15 @@ class OrderConfirmationByUserView(APIView):
 
         try:
             ''' поиск заказа по id '''
-
-            order = Order.objects.get(id=order_id)
+            order = Order.objects.get(id=order_id, state='basket')
             order_items = OrderItem.objects.filter(order=order_id)
         except:
-            print("Error: Заказ не существует")
-            return Response({'Error': 'Заказ не существует'})
+            return Response({'Error': 'Заказ для подтверждения не существует'})
 
 
         product_infos = {}
 
-        ''' по каждому полю деталей заказа '''
+        ''' проходимся по каждому продукту в заказе, чтобы проверить наличие в магазине и подредактировать + цена '''
         for item in order_items:
             ''' проверка существующего количества в магазине'''
             total_quantity_available = int(item.product_info.quantity)
@@ -320,7 +310,6 @@ class OrderConfirmationByUserView(APIView):
                 return Response({'Error': 'Товар раскуплен'})
             ''' если товара в наличии меньше, чем в заказе '''
             order_quantity = total_quantity_available if quantity > total_quantity_available else quantity
-
             ''' если настоящее количество товара в заказе отличается от рассчитаного, то выбери рассчитаную '''
             if quantity != order_quantity:
                 item.quantity = order_quantity
@@ -330,13 +319,13 @@ class OrderConfirmationByUserView(APIView):
             ''' информация по товарам записывается в словарь '''
             product_infos[item.id] = (item.product_info.product.name, item.product_info.model, order_quantity, price,)
 
-            ''' обновляем количество в таблице товаров магазина '''
-            item.product_info.quantity = item.product_info.quantity - order_quantity
-            product_info_save = ProductInfo.objects.get(id=item.product_info.id)
-            product_info_save.quantity = item.product_info.quantity
-            product_info_save.save()
 
         try:
+            ''' если все хорошо и все товары в наличии - изменяем количество в самом магазине '''
+            for item in order_items:
+                product_info_save = ProductInfo.objects.get(id=item.product_info.id)
+                product_info_save.quantity = product_info_save.quantity - item.quantity
+                product_info_save.save()
 
             ''' подтверждение заказа с необходимыми параметрами '''
             address_person = ContactUser.objects.filter(user=user_id)

@@ -62,15 +62,16 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContactUser
-        fields = ['city']
+        fields = '__all__'
+
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    contact = ContactSerializer
+    contact = ContactSerializer()
 
     class Meta:
         model = Order
-        fields = ['dt', 'contact', 'state']
+        fields = ['dt', 'id', 'contact', 'state']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
