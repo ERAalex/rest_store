@@ -17,4 +17,8 @@ urlpatterns = [
     path('all_ordes_available', PartnerOrdersView.as_view()),
 
     path('basket', BasketView.as_view()),
+    path('basket/change_status', OrderConfirmationByUserView.as_view()),
+
+    path('order_confirmation/', OrderConfirmationByUserView.as_view()),
+
 ]

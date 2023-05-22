@@ -34,7 +34,7 @@ class ProductParameterAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'state']
+    list_display = ['user', 'id', 'state']
 
 
 # список заказанных позиций

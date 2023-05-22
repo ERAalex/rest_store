@@ -133,7 +133,7 @@ class Order(models.Model):
         ordering = ('-dt',)
 
     def __str__(self):
-        return str(self.dt)
+        return str(self.id) + ' - ' + str(self.dt)
 
     # @property
     # def sum(self):

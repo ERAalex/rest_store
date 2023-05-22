@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .email_confirmation import confirmation_order_email
 
 import yaml
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +13,9 @@ from requests import get
 from core.filters import ShopFilter
 from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer, ShopSerializer
 from .models import *
+from users_part.models import ContactUser
+from users_part.serializers import ContactUserSerializer
+import datetime
 
 
 class PartnerUpdate(APIView):
@@ -216,7 +220,7 @@ class BasketView(APIView):
         for items in product:
             dict_result[f'{items.id} - {items.product_info.product}'] = f'количество товара - {items.quantity}'
 
-        return Response({'Всего в корзине товаров': f'{dict_result}'})
+        return Response({f'Всего в корзине № {order.id} товаров': f'{dict_result}'})
 
     def put(self, request):
         ''' Обновление корзины - принимает список'''
@@ -271,5 +275,83 @@ class BasketView(APIView):
 
         return Response({'Статус': f'Товары изменены в корзине: {dict_information["order"]}. '
                                    f'Товар: {dict_information}.'})
+
+
+
+
+
+
+# подтверждение пользовательского заказа
+class OrderConfirmationByUserView(APIView):
+
+    def patch(self, request):
+        user_id = request.user.id
+
+        ''' вызов функции, кот. сохраняет/обновляет адрес пользователя '''
+        check_contact_adress = ContactUser.objects.filter(user=user_id)
+
+        if not check_contact_adress:
+            return Response({'Error': 'Отсутсвует адрес доставки'})
+
+        order_id = request.data['order_id']
+        if not order_id:
+            return Response({'Error': 'Не указан номер заказа'})
+
+        try:
+            ''' поиск заказа по id '''
+
+            order = Order.objects.get(id=order_id)
+            order_items = OrderItem.objects.filter(order=order_id)
+        except:
+            print("Error: Заказ не существует")
+            return Response({'Error': 'Заказ не существует'})
+
+
+        product_infos = {}
+
+        ''' по каждому полю деталей заказа '''
+        for item in order_items:
+            ''' проверка существующего количества в магазине'''
+            total_quantity_available = int(item.product_info.quantity)
+            ''' количества товара в заказе '''
+            quantity = item.quantity
+            ''' проверка, есть ли товар в наличии '''
+            if total_quantity_available == 0:
+                return Response({'Error': 'Товар раскуплен'})
+            ''' если товара в наличии меньше, чем в заказе '''
+            order_quantity = total_quantity_available if quantity > total_quantity_available else quantity
+
+            ''' если настоящее количество товара в заказе отличается от рассчитаного, то выбери рассчитаную '''
+            if quantity != order_quantity:
+                item.quantity = order_quantity
+                item.save()
+            ''' рассчет цены '''
+            price = float(item.product_info.price) * order_quantity
+            ''' информация по товарам записывается в словарь '''
+            product_infos[item.id] = (item.product_info.product.name, item.product_info.model, order_quantity, price,)
+
+            ''' обновляем количество в таблице товаров магазина '''
+            item.product_info.quantity = item.product_info.quantity - order_quantity
+            product_info_save = ProductInfo.objects.get(id=item.product_info.id)
+            product_info_save.quantity = item.product_info.quantity
+            product_info_save.save()
+
+        try:
+
+            ''' подтверждение заказа с необходимыми параметрами '''
+            address_person = ContactUser.objects.filter(user=user_id)
+            address_dict = ContactUserSerializer(address_person[0]).data
+            confirmation_order_email(request.user.email, request.user.name, order_id, product_infos, address_dict)
+
+            ''' изменение статуса заказа '''
+            Order.objects.filter(id=order_id).update(state='confirmed', user=user_id)
+
+            return Response({'Ok': f'заказ {order.id} успешно подтвержден'})
+
+        except Exception as e:
+            print(e)
+            return Response({'Error': 'Ошибка во время подтверждения заказа'})
+
+
 
 
