@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .email_confirmation import confirmation_order_email
+from .email_confirmation import confirmation_order_email, confirmation_order_email_for_shop
 
 import yaml
 from rest_framework.viewsets import ModelViewSet
@@ -261,7 +261,7 @@ class BasketView(APIView):
                     quantity=quantity_items
                 )
 
-            except Exception as e:
+            except ValueError as e:
                 print(e)
                 return Response({'error': 'Не удалось сохранить товар в корзину'})
 
@@ -299,6 +299,7 @@ class OrderConfirmationByUserView(APIView):
 
         product_infos = {}
 
+
         ''' проходимся по каждому продукту в заказе, чтобы проверить наличие в магазине и подредактировать + цена '''
         for item in order_items:
             ''' проверка существующего количества в магазине'''
@@ -319,13 +320,26 @@ class OrderConfirmationByUserView(APIView):
             ''' информация по товарам записывается в словарь '''
             product_infos[item.id] = (item.product_info.product.name, item.product_info.model, order_quantity, price,)
 
-
         try:
-            ''' если все хорошо и все товары в наличии - изменяем количество в самом магазине '''
+            ''' готовим адрес покупателя для сообщений email '''
+            address_person = ContactUser.objects.filter(user=user_id)
+            address_dict = ContactUserSerializer(address_person[0]).data
+            ''' если все товары в наличии - изменяем количество в самом магазине + готовим словарь из магазинов'''
+            shops = dict()
+
             for item in order_items:
                 product_info_save = ProductInfo.objects.get(id=item.product_info.id)
                 product_info_save.quantity = product_info_save.quantity - item.quantity
                 product_info_save.save()
+                try:
+                    shops[item.product_info.shop.user_account.email] += [[item.id, item.product_info.product.name,
+                                                                         item.quantity]]
+                except:
+                    shops[item.product_info.shop.user_account.email] = [[item.id, item.product_info.product.name,
+                                                                        item.quantity]]
+
+            ''' рассылаем конкретно каждому магазину из заказа номер заказа и детали по конкретно его товарам'''
+            confirmation_order_email_for_shop(shops, order_id, address_dict)
 
             ''' подтверждение заказа с необходимыми параметрами '''
             address_person = ContactUser.objects.filter(user=user_id)
@@ -337,7 +351,7 @@ class OrderConfirmationByUserView(APIView):
 
             return Response({'Ok': f'заказ {order.id} успешно подтвержден'})
 
-        except Exception as e:
+        except ValueError as e:
             print(e)
             return Response({'Error': 'Ошибка во время подтверждения заказа'})
 
