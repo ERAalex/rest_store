@@ -15,6 +15,7 @@ from .serializers import ProductListSerializer, ProductSerializer, OrderItemSeri
 from .models import *
 from users_part.models import ContactUser
 from users_part.serializers import ContactUserSerializer
+from .tasks import celery_confirmation_order_email, celery_confirmation_order_email_for_shop
 
 
 class PartnerUpdate(APIView):
@@ -338,13 +339,18 @@ class OrderConfirmationByUserView(APIView):
                     shops[item.product_info.shop.user_account.email] = [[item.id, item.product_info.product.name,
                                                                         item.quantity]]
 
-            ''' рассылаем конкретно каждому магазину из заказа номер заказа и детали по конкретно его товарам'''
-            confirmation_order_email_for_shop(shops, order_id, address_dict)
+            ''' Celery -рассылаем конкретно каждому магазину из заказа номер заказа и детали по конкретно его товарам'''
+            async_result_company = celery_confirmation_order_email_for_shop.delay(shops, order_id, address_dict)
+            print(async_result_company.id)
 
             ''' подтверждение заказа с необходимыми параметрами '''
             address_person = ContactUser.objects.filter(user=user_id)
             address_dict = ContactUserSerializer(address_person[0]).data
-            confirmation_order_email(request.user.email, request.user.name, order_id, product_infos, address_dict)
+            # confirmation_order_email(request.user.email, request.user.name, order_id, product_infos, address_dict)
+            '''Celery -отправка писем Клиенту с подтверждением'''
+            async_result_client = celery_confirmation_order_email.delay(request.user.email, request.user.name, order_id,
+                                                                 product_infos, address_dict)
+            print(async_result_client.id)
 
             ''' изменение статуса заказа '''
             Order.objects.filter(id=order_id).update(state='confirmed', user=user_id)

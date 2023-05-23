@@ -1,6 +1,9 @@
 from django.contrib import admin
 from .models import *
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 3
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
@@ -35,6 +38,7 @@ class ProductParameterAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'id', 'state']
+    inlines = [OrderItemInline, ]
 
 
 # список заказанных позиций
