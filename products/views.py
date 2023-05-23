@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .email_confirmation import confirmation_order_email, confirmation_order_email_for_shop
 
 import yaml
 from rest_framework.viewsets import ModelViewSet
@@ -15,7 +14,7 @@ from .serializers import ProductListSerializer, ProductSerializer, OrderItemSeri
 from .models import *
 from users_part.models import ContactUser
 from users_part.serializers import ContactUserSerializer
-from .tasks import celery_confirmation_order_email, celery_confirmation_order_email_for_shop
+from .tasks import celery_confirmation_order_email, celery_confirmation_order_email_for_shop, celery_save_products_shop
 
 
 class PartnerUpdate(APIView):
@@ -34,42 +33,11 @@ class PartnerUpdate(APIView):
             destination.write(chunk)
         destination.close()
 
-        '''Открываем файл и обновляем данные - можно сделать через celery'''
-        with open("media/shop1.yaml") as stream:
-            try:
-                data = load_yaml(stream, Loader=Loader)
-                shop_data = data['shop']
+        '''Celery - Открываем файл и обновляем данные'''
+        async_result_company_upload = celery_save_products_shop.delay(result.name)
+        print(async_result_company_upload.id)
 
-                categories = data['categories']
-                goods = data['goods']
-                shop, _ = Shop.objects.get_or_create(name=shop_data)
-                for category_data in categories:
-                    category, _ = Category.objects.get_or_create(id=category_data['id'], name=category_data['name'])
-                    category.shops.add(shop.id)
-                    category.save()
-
-                ProductInfo.objects.filter(shop_id=shop.id).delete()
-                for good in goods:
-                    product, _ = Product.objects.get_or_create(id=good['id'], name=good['name'],
-                                                               category_id=good['category'])
-
-                    product_info = ProductInfo.objects.create(
-                        product=product,
-                        shop=shop,
-                        model=good['model'],
-                        price=good['price'],
-                        price_rrc=good['price_rrc'],
-                        quantity=good['quantity'])
-                    for name, value in good['parameters'].items():
-                        parameter_object, _ = Parameter.objects.get_or_create(name=name)
-                        ProductParameter.objects.create(
-                            product_info=product_info,
-                            parameter=parameter_object,
-                            value=value)
-            except yaml.YAMLError as exc:
-                return Response({'status': 'Error', 'message': exc})
-            return Response({'status': 'OK'})
-
+        return Response({'status': 'OK'})
 
 class ShopViewSet(ModelViewSet):
     """

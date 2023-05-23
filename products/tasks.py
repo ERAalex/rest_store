@@ -1,6 +1,10 @@
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives, send_mail
 from core import settings
+from yaml import load as load_yaml, Loader
+from .models import Shop, Category, Product, ProductInfo, Parameter, ProductParameter
+from rest_framework.response import Response
+import yaml
 
 '''Отправляем сообщение при подтверждении заказа - Клиенту'''
 @shared_task
@@ -52,3 +56,41 @@ def celery_confirmation_order_email_for_shop(dict_order: dict, order_id, address
             send_mail(subject=subject, message=message, from_email=settings.EMAIL_HOST_USER,
                       recipient_list=recipient_list)
 
+
+'''Загружаем продукты - Компании'''
+@shared_task
+def celery_save_products_shop(filename):
+    with open(f"media/{filename}") as stream:
+        try:
+            data = load_yaml(stream, Loader=Loader)
+            shop_data = data['shop']
+
+            categories = data['categories']
+            goods = data['goods']
+            shop, _ = Shop.objects.get_or_create(name=shop_data)
+            for category_data in categories:
+                category, _ = Category.objects.get_or_create(id=category_data['id'], name=category_data['name'])
+                category.shops.add(shop.id)
+                category.save()
+
+            ProductInfo.objects.filter(shop_id=shop.id).delete()
+            for good in goods:
+                product, _ = Product.objects.get_or_create(id=good['id'], name=good['name'],
+                                                           category_id=good['category'])
+
+                product_info = ProductInfo.objects.create(
+                    product=product,
+                    shop=shop,
+                    model=good['model'],
+                    price=good['price'],
+                    price_rrc=good['price_rrc'],
+                    quantity=good['quantity'])
+                for name, value in good['parameters'].items():
+                    parameter_object, _ = Parameter.objects.get_or_create(name=name)
+                    ProductParameter.objects.create(
+                        product_info=product_info,
+                        parameter=parameter_object,
+                        value=value)
+        except yaml.YAMLError as exc:
+            return Response({'status': 'Error', 'message': exc})
+        return Response({'status': 'OK'})
