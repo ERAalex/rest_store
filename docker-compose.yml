@@ -53,6 +53,6 @@ services:
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: eraspb@mail.ru
-      PGADMIN_DEFAULT_PASSWORD: nazca007
+      PGADMIN_DEFAULT_PASSWORD: 1221
     ports:
       - "5050:80"
