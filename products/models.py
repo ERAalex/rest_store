@@ -53,7 +53,7 @@ class ProductInfo(models.Model):
 
     product = models.ForeignKey(Product, verbose_name='Продукт', related_name='product_info', blank=True,
                                 on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='product_info', blank=True,
+    shop = models.ForeignKey(Shop, verbose_name='Магазин', blank=True,
                              on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='Количество')
     price = models.PositiveIntegerField(verbose_name='Цена')
@@ -62,9 +62,6 @@ class ProductInfo(models.Model):
     class Meta:
         verbose_name = 'Информация о продукте'
         verbose_name_plural = "Информационный список о продуктах"
-        constraints = [
-            models.UniqueConstraint(fields=['product', 'shop'], name='product_info'),
-        ]
 
 
 

@@ -4,12 +4,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-import yaml
+# import yaml
 from rest_framework.viewsets import ModelViewSet
 from yaml import load as load_yaml, Loader
 
 from requests import get
-from core.filters import ShopFilter
+# from core.filters import ShopFilter
 from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer, ShopSerializer
 from .models import *
 from users_part.models import ContactUser
@@ -56,8 +56,7 @@ class ProductsViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = ProductListSerializer
     http_method_names = ['get', ]
-    filterset_class = ShopFilter
-
+    # filterset_class = ShopFilter
 
 class ProductsItemViewSet(ModelViewSet):
     """
@@ -66,7 +65,7 @@ class ProductsItemViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     http_method_names = ['get', ]
-    filterset_class = ShopFilter
+    # filterset_class = ShopFilter
 
     def get_queryset(self):
         id_data = self.kwargs['id']
@@ -80,7 +79,7 @@ class OrderItemViewSet(ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     http_method_names = ['get', 'put', 'delete']
-    filterset_class = ShopFilter
+    # filterset_class = ShopFilter
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

@@ -85,6 +85,7 @@ DATABASES = {
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASS'),
         'HOST': env('DB_HOST'),
+        # 'HOST': 'db',
         'PORT': env('DB_PORT'),
     }
 }
@@ -169,9 +170,15 @@ AUTH_USER_MODEL = 'users_part.UserAccount'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-'''Celery settings'''
+'''Production - Celery settings'''
+# CELERY_BROKER_URL = 'redis://redis:6379'
+# CELERY_RESULT_BACKEND = 'redis://redis:6379'
+
+'''Localhost - Celery settings'''
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
