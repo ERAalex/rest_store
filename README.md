@@ -30,7 +30,9 @@ Django REST Framework - Server.
 2. Трудоемкие задачи выполняются черезе Celery - отправка писем, заполнение БД товарами.<br><br>
 3. Подготовлен docker-compose.yml для запуска проекта: <br>
  DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
-
+ 
+<img src="https://github.com/ERAalex/rest_store/blob/main/docker.png">
+<p>
 
 
 
