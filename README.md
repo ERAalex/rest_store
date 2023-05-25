@@ -28,7 +28,8 @@ Django REST Framework - Server.
 
 2. Продуманная структура БД с опциями для корзины. Будет полезна в похожих проектах.<br><br>
 2. Трудоемкие задачи выполняются черезе Celery - отправка писем, заполнение БД товарами.<br><br>
-3. Подготовлен docker-compose.yml для запуска проекта - DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
+3. Подготовлен docker-compose.yml для запуска проекта: <br>
+ DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
 
 
 
@@ -37,15 +38,14 @@ Django REST Framework - Server.
 
 ## Technologies
 Main:<br/>
-[![SkillIcons](https://skillicons.dev/icons?i=python)](https://skillicons.dev) PYTHON - REST FRAMEWORK <br/>
-Celery + PgAdmin<br/>
+[![SkillIcons](https://skillicons.dev/icons?i=python)](https://skillicons.dev) PYTHON - REST FRAMEWORK + Celery + PgAdmin <br/>
 
 DATABASES:<br/>
 [![SkillIcons](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) PostgreSQL <br/>
 [![SkillIcons](https://skillicons.dev/icons?i=redis)](https://skillicons.dev) Redis <br/>
 
 Additional tech:<br/>
-[![SkillIcons](https://skillicons.dev/icons?i=git)](https://skillicons.dev) Docker <br/>
+[![SkillIcons](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) Docker <br/>
 [![SkillIcons](https://skillicons.dev/icons?i=git)](https://skillicons.dev) GIT <br/>
 [![SkillIcons](https://skillicons.dev/icons?i=linux)](https://skillicons.dev) Linux <br/><br/>
 
