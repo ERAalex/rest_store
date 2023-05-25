@@ -1,8 +1,8 @@
 
 #### E.R.A. - Espinosa Rozov Alexander - python developer.
-# Project - API Money - recive current costs of Rubl
+# Project - API Store - Warehouse -  sale of goods
 
-<img src="https://github.com/ERAalex/ERA_Fast_API_course_money/blob/main/api_money_im.webp">
+<img src="https://github.com/ERAalex/rest_store/blob/main/warehouse.jpeg">
 <p>
   <a href="https://www.linkedin.com/in/alexander-espinosa-rozov-b3b270121/"><img src="https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white"></a>
 </p>
@@ -10,56 +10,26 @@
 <br><a href="mailto:erapyth@gmail.com"><img src="https://img.shields.io/badge/-Gmail%20contact%20me-red"></a>
 <br><a href="https://t.me/espinosa_python"><img src="https://img.shields.io/badge/-Telegram-blue"></a>
 
-## About the project.
+## О проекте.
 
   <a href="#" target="_blank" rel="noreferrer nofollow">
       <img src="https://github.com/ERAalex/PREVIEW_project_site_buisness_card_Maria-/blob/main/website_icons.jpg" >
     </a>
 
-This application is a Fast Api server with the ability to provide the exchange rate of coins on any date. The main idea: <br>
+Приложение предназначено для автоматизации закупок в розничной сети. Пользователи сервиса — покупатель (менеджер торговой сети, который закупает товары для продажи в магазине) и поставщик товаров. <br>
 
-1. FAST API Server.<br>
-- use API of https://cbr.ru/development/SXML/ to get new information about exchange rate of coins.<br>
-- Check information in database - Mongo DB.<br>
-- Save new information on Mongo Db database.<br>
+Django REST Framework - Server. 
+1. Основные API:<br>
+- Возможность работы с пользователем через JWT токены благодаря библиотеке Djoser.<br>
+- Возможность взаимодействовать с корзиной - добавление товаров, редактирование, удаление.<br>
+- Продавцы могут обновлять информацию по товаром через загрузку yml файлов (подготовлен скрипт для заполнения БД).<br>
+- Отправка EMAIL при подтверждении корзины как покупателю, так и магазинам из заказа.<br>
+и другие возможности. При загрузке проекта работает подробная документация через SWAGGER.<br><br>
 
-you can make a request  http://127.0.0.1:8000/coin/GBP   where GBP - is a coin of England
-
-2. Vue JS.<br>
-- the user can write the name of coin and get information from our Fast Api Server.<br><br>
-
-
-3. Ready Dockerfile and Docker-compose.yml to RUN Containers.<br> Just type the command: docker-compose up
-Container for app + Container for MongoDB <br><br>
+2. Трудоемкие задачи выполняются черезе Celery - отправка писем, заполнение БД товарами.<br><br>
+3. Подготовлен docker-compose.yml для запуска проекта - DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
 
 
-Interesting points about API of SBR:<br>
-- All information from https://cbr.ru/development/SXML/ we recive not in JSON but as XML so we need to use - import xmltodict as xmltodict <br>
-<br>
-
-Intresting points about Mongo db to JSON:<br>
-- When we try to pass Mongo Db information as JSON response in Fast API we can recieve problem with '_ id' because it is not just field like int or str, so Fast Api can't serialize this field, the opcion is not use this field, just skip it like: <br>
-find_item = collection_name.find_one({'date': f'{date}'}, {'_id': 0}).
-
-
-RESOLVED  Problem.
-When we try make a API request from Vue JS to localhost Fast Api you can get this error: <br>
-- fast api from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' <br><br>
-
-You can do:<br>
-
-from fastapi.middleware.cors import CORSMiddleware <br><br>
-and add: <br>
-
-origins = ["*"] <br>
-
-app.add_middleware(<br>
-    CORSMiddleware,<br>
-    allow_origins=origins,<br>
-    allow_credentials=True,<br>
-    allow_methods=["*"],<br>
-    allow_headers=["*"],<br>
-)<br>
 
 
 <br>
@@ -67,19 +37,17 @@ app.add_middleware(<br>
 ## Technologies
 Main:<br/>
 [![SkillIcons](https://skillicons.dev/icons?i=python)](https://skillicons.dev) PYTHON - REST FRAMEWORK <br/>
-
-Main:<br/>
-[![SkillIcons](https://skillicons.dev/icons?i=vue)](https://skillicons.dev) VUE JS <br/>
+Celery + PgAdmin<br/>
 
 DATABASES:<br/>
-[![SkillIcons](https://skillicons.dev/icons?i=mongo)](https://skillicons.dev) Mongo DB <br/>
+[![SkillIcons](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) PostgreSQL <br/>
+[![SkillIcons](https://skillicons.dev/icons?i=redis)](https://skillicons.dev) Redis <br/>
 
 Additional tech:<br/>
+[![SkillIcons](https://skillicons.dev/icons?i=git)](https://skillicons.dev) Docker <br/>
 [![SkillIcons](https://skillicons.dev/icons?i=git)](https://skillicons.dev) GIT <br/>
 [![SkillIcons](https://skillicons.dev/icons?i=linux)](https://skillicons.dev) Linux <br/><br/>
 
-[![SkillIcons](https://skillicons.dev/icons?i=html)](https://skillicons.dev) HTML <br/>
-[![SkillIcons](https://skillicons.dev/icons?i=css)](https://skillicons.dev) CSS <br/>
 <br/><br/>
 
 ## The most important projects:
