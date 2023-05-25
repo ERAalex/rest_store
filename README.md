@@ -10,7 +10,7 @@
 <br><a href="mailto:erapyth@gmail.com"><img src="https://img.shields.io/badge/-Gmail%20contact%20me-red"></a>
 <br><a href="https://t.me/espinosa_python"><img src="https://img.shields.io/badge/-Telegram-blue"></a>
 
-## О проекте.
+## О проекте - Backend-project (Django REST Framework) .
 
   <a href="#" target="_blank" rel="noreferrer nofollow">
       <img src="https://github.com/ERAalex/PREVIEW_project_site_buisness_card_Maria-/blob/main/website_icons.jpg" >
@@ -22,10 +22,11 @@ Django REST Framework - Server.
 1. Основные API:<br>
 - Возможность работы с пользователем через JWT токены благодаря библиотеке Djoser.<br>
 - Возможность взаимодействовать с корзиной - добавление товаров, редактирование, удаление.<br>
-- Продавцы могут обновлять информацию по товаром через загрузку yml файлов (подготовлен скрипт для заполнения БД).<br>
+- Продавцы могут обновлять информацию по товаром через загрузку yml файлов <br>(подготовлен скрипт для заполнения БД).<br>
 - Отправка EMAIL при подтверждении корзины как покупателю, так и магазинам из заказа.<br>
-и другие возможности. При загрузке проекта работает подробная документация через SWAGGER.<br><br>
+Остальные API в документации. При загрузке проекта работает SWAGGER.<br><br>
 
+2. Продуманная структура БД с опциями для корзины. Будет полезна в похожих проектах.<br><br>
 2. Трудоемкие задачи выполняются черезе Celery - отправка писем, заполнение БД товарами.<br><br>
 3. Подготовлен docker-compose.yml для запуска проекта - DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
 
