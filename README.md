@@ -31,7 +31,7 @@ Django REST Framework - Server.
 3. Подготовлен docker-compose.yml для запуска проекта: <br>
  DjangoApp + Celery + PostgreSQL + PgAdmin + Redis<br><br>
  
-<img src="https://github.com/ERAalex/rest_store/blob/main/docker.png">
+<img src="https://github.com/ERAalex/rest_store/blob/main/docker.png" width="300" height="200">
 <p>
 
 
