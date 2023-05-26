@@ -1,0 +1,60 @@
+
+version: '3'
+ 
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./core:/app
+    command: >
+      sh -c "python3 manage.py migrate &&
+             python3 manage.py makemigrations &&
+             python3 manage.py migrate &&
+             python3 manage.py runserver 0.0.0.0:8000"
+ 
+    environment:
+      - DB_HOST=localhost
+      - DB_NAME=diplom_store
+      - DB_USER=postgres
+      - DB_PASS=1221
+    depends_on:
+      - db
+             
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=diplom_store
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1221
+    volumes:
+      - ./core:/app
+  redis:
+    image: redis:alpine
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A core worker -l info
+    volumes:
+      - ./core:/app
+    environment:
+      - DB_HOST=redis
+      - DB_NAME=diplom_store
+      - DB_USER=postgres
+      - DB_PASS=1221
+    depends_on:
+      - db
+      - redis
+      - app
+  pgadmin:
+    container_name: db
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: eraspb@mail.ru
+      PGADMIN_DEFAULT_PASSWORD: 1221
+    ports:
+      - "5050:80"

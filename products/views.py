@@ -9,6 +9,8 @@ from rest_framework.viewsets import ModelViewSet
 from yaml import load as load_yaml, Loader
 
 from requests import get
+
+from .email_confirmation import confirmation_order_email
 # from core.filters import ShopFilter
 from .serializers import ProductListSerializer, ProductSerializer, OrderItemSerializer, OrderSerializer, ShopSerializer
 from .models import *

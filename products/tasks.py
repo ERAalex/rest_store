@@ -6,6 +6,8 @@ from .models import Shop, Category, Product, ProductInfo, Parameter, ProductPara
 from rest_framework.response import Response
 import yaml
 
+# запуск worker ов: celery -A core.celery worker
+
 '''Отправляем сообщение при подтверждении заказа - Клиенту'''
 @shared_task
 def celery_confirmation_order_email(recipient_email, username, order_id, product_infos, address_dict):
