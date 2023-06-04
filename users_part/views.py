@@ -1,6 +1,7 @@
 from djoser.views import UserViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.viewsets import ModelViewSet
 from .serializers import ContactUserSerializer
 
@@ -30,6 +31,7 @@ class ContactUserApiView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = ContactUser.objects.all()
     serializer_class = ContactUserSerializer
+    throttle_classes = [UserRateThrottle]
 
     def get_queryset(self):
         return ContactUser.objects.filter(user=self.request.user)

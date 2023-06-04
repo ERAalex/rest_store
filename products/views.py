@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 
 # import yaml
 from rest_framework.viewsets import ModelViewSet
@@ -49,6 +50,7 @@ class ShopViewSet(ModelViewSet):
     serializer_class = ShopSerializer
     http_method_names = ['get', ]
     permission_classes = [AllowAny]
+    throttle_classes = [UserRateThrottle]
 
 
 class ProductsViewSet(ModelViewSet):
@@ -58,7 +60,7 @@ class ProductsViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = ProductListSerializer
     http_method_names = ['get', ]
-    # filterset_class = ShopFilter
+    throttle_classes = [UserRateThrottle]
 
 class ProductsItemViewSet(ModelViewSet):
     """
@@ -67,7 +69,7 @@ class ProductsItemViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     http_method_names = ['get', ]
-    # filterset_class = ShopFilter
+    throttle_classes = [UserRateThrottle]
 
     def get_queryset(self):
         id_data = self.kwargs['id']
@@ -81,7 +83,7 @@ class OrderItemViewSet(ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     http_method_names = ['get', 'put', 'delete']
-    # filterset_class = ShopFilter
+    throttle_classes = [UserRateThrottle]
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

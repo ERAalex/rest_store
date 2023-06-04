@@ -11,6 +11,7 @@ urlpatterns = [
     path('', include('products.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('auth/', include('djoser.social.urls')),
 ]
 
 urlpatterns += doc_urls
