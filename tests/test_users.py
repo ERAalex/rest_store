@@ -58,8 +58,8 @@ def test_user_get_Jwt():
     ''' done - working '''
 
     payload = {
-        'email': "eraspbb@mail.ru",
-        'password': "Nazca1221",
+        'email': "eraspb@mail.ru",
+        'password': "Nazca007",
     }
 
     response = requests.post(
@@ -89,7 +89,11 @@ def test_delete_user():
     header = {
         'Authorization': 'JWT ' + pytest.global_variable_JWT_user}
 
-    response = requests.delete(f'{ENDPOINT}/users/me', headers=header)
+    payload = {
+        'current_password': "Nazca007",
+    }
+
+    response = requests.delete(f'{ENDPOINT}/users/me/', json=payload, headers=header)
     assert response.status_code == 204
 
 
