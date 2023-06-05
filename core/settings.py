@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
 
     'users_part',
     'products',
@@ -36,12 +37,14 @@ INSTALLED_APPS = [
     'drf_yasg',
     'tests',
     'social_django',
+    'silk',
 
 ]
 
 MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -163,7 +166,7 @@ SIMPLE_JWT = {
    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=720),
    'AUTH_TOKEN_CLASSES': (
-       'rest_framework_simplejwt.tokens.AccessToken'
+       'rest_framework_simplejwt.tokens.AccessToken',
    )
 }
 
