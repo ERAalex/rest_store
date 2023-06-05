@@ -2,8 +2,7 @@ import requests
 import pytest
 
 # pytest tests/*
-# python -m pytest -v -s    - чтобы увидеть ответ с data
-
+#  py.test tests/test_users.py -v -s   - чтобы увидеть ответ с data
 
 
 def test_equal():
@@ -18,36 +17,22 @@ def test_call_call_endpoint():
 ENDPOINT = 'http://127.0.0.1:8000/auth'
 pytest.global_variable_JWT_user = ''
 
-@pytest.fixture
-def test_get_admin_JWT():
-    payload = {
-        'email': 'eraspb@mail.ru',
-        'password': 'Naz'
-    }
-
-    response = requests.post('http://127.0.0.1:8000/auth/jwt/create', json=payload)
-    assert response.status_code == 200
-
-    data = response.json()
-    token_admin = data['access']
-    print(token_admin)
-    return token_admin
-
 
 '''TEST - User part'''
-#
-# Пользователь создается, но тест зависает т.к. идет попытка отправить письмо в тесте smtplib.SMTPServerDisconnected
+
 # def test_user_create():
+#     ''' done - working '''
+#
 #     payload = {
-#         'name': 'samuel',
+#         'name': 'John',
 #         'person_telephone': '89117861595',
-#         'surname': 'lesli',
-#         'email': 'eraspbb@mail.ru',
-#         'password': 'Nazca1221',
-#         're_password': 'Nazca1221'
+#         'surname': 'Snow',
+#         'email': 'eraspb@mail.ru',
+#         'password': 'Test007007',
+#         're_password': 'Test007007',
 #     }
 #
-#     response = requests.post(ENDPOINT + 'users/', json=payload)
+#     response = requests.post(ENDPOINT + '/users/', json=payload)
 #     assert response.status_code == 201
 #     data = response.json()
 #     print(data)
@@ -59,7 +44,7 @@ def test_user_get_Jwt():
 
     payload = {
         'email': "eraspb@mail.ru",
-        'password': "Nazca007",
+        'password': "Test007007",
     }
 
     response = requests.post(
@@ -84,19 +69,48 @@ def test_user_get_user():
     print(data)
 
 
-def test_delete_user():
+def test_user_contact_create():
     ''' done - working '''
+
     header = {
         'Authorization': 'JWT ' + pytest.global_variable_JWT_user}
 
     payload = {
-        'current_password': "Nazca007",
+        'city': 'Moscow',
+        'street': 'Smolenskaya',
+        'house': '23',
+        'structure': '',
+        'building': '',
+        'apartment': '141',
+        'phone': '89117861599',
     }
 
-    response = requests.delete(f'{ENDPOINT}/users/me/', json=payload, headers=header)
-    assert response.status_code == 204
+    response = requests.get('http://127.0.0.1:8000' + '/contacts/', headers=header)
+    data_id = response.json()
 
 
-'''Partner part Test'''
-# def test_upload():
+    if response.status_code == 200 and len(data_id) > 0:
+        data_id = response.json()[0]['id']
+        response = requests.put('http://127.0.0.1:8000' + f'/contacts/{data_id}', json=payload, headers=header)
+        assert response.status_code == 200
+        data = response.json()
+    else:
+        response = requests.post('http://127.0.0.1:8000' + '/contacts/', json=payload, headers=header)
+        assert response.status_code == 201
+        data = response.json()
+    print(data)
+    return data
+
+
+# def test_delete_user():
+#     ''' done - working '''
+#     header = {
+#         'Authorization': 'JWT ' + pytest.global_variable_JWT_user}
 #
+#     payload = {
+#         'current_password': "Test007007",
+#     }
+#
+#     response = requests.delete(f'{ENDPOINT}/users/me/', json=payload, headers=header)
+#     assert response.status_code == 204
+
